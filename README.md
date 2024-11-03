@@ -20,7 +20,7 @@ This project allows users to view the currently playing song on Spotify live on 
 1. Bu projeyi yerel makinenize klonlayın:
    Clone this project to your local machine:
     ```sh
-    git clone https://github.com/kullanıcı-adınız/spotify-now-playing.git
+    git clone https://github.com/devshadow1/spotify-now-playing.git
     cd spotify-now-playing
     ```
 
