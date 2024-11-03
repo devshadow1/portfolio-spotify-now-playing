@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>c3n4p</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #121212; /* Koyu arka plan */
+            color: #ffffff; /* Beyaz metin rengi */
+            font-family: 'Roboto', sans-serif; /* Yazı tipi */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh; /* Ekranın tamamını kapla */
+        }
+        h1 {
+            font-size: 7rem; /* Başlık boyutu */
+            margin-bottom: 20px; /* Başlık ile altındaki içerik arasındaki boşluk */
+        }
+        .song-info {
+            text-align: center; /* Şarkı bilgilerini ortala */
+            margin-bottom: 30px; /* Altında boşluk */
+            cursor: pointer;
+        }
+        img {
+            max-width: 200px; /* Albüm kapağı boyutu */
+            cursor: pointer;
+            border-radius: 10px; /* Yuvarlak kenarlar */
+        }
+        .progress-bar {
+            width: 100%; /* Barın genişliği */
+            max-width: 200px; /* Barın genişliği albüm kapağına uygun olacak şekilde */
+            background-color: #333; /* Bar arka rengi */
+            border-radius: 5px; /* Bar kenar yuvarlama */
+            overflow: hidden; /* Kenar taşmalarını gizle */
+            margin: 15px 0; /* Bar ile metin arasında boşluk */
+            height: 10px; /* Bar yüksekliği */
+        }
+        .progress {
+            height: 100%; /* Bar yüksekliği */
+            background-color: #1db954; /* Bar iç rengi */
+            width: 0; /* Başlangıçta barın genişliği 0 */
+            transition: width 0.5s; /* Geçiş efekti */
+        }
+        .contact {
+            margin-top: 20px; /* İletişim kısmı için boşluk */
+            font-size: 1.2rem; /* İletişim kısmı yazı boyutu */
+            margin: 20px 0;
+        }
+
+        .social-logo {
+            width: 30px; /* İkon boyutu */
+            height: 30px;
+            margin: 0 5px; /* İkonlar arasındaki boşluk */
+            vertical-align: middle; /* İkonların dikey hizalaması */
+        }
+        footer {
+            margin-top: 20px;
+            font-size: 1em; /* Yazı boyutu */
+            text-align: center; /* Ortala */
+        }
+        .snucre {
+            font-size: 0.8em; /* Yanıp sönen yazının boyutu */
+            animation: blink 2s infinite; /* Yanıp sönme efekti */
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <h1>c3n4p</h1>
+    <div class="song-info">
+        <img id="album-art" src="" alt="Albüm Kapağı">
+        <h2 id="song-name">Şarkı Adı</h2>
+        <h3 id="artist-name">Sanatçı Adı</h3>
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+    </div>
+    <div class="contact">
+        <a href="https://www.linkedin.com/in/cenapbozkurt" target="_blank">
+            <img src="https://img.icons8.com/?size=100&id=98960&format=png&color=FFFFFF" alt="LinkedIn" class="social-logo">
+        </a>
+        <a href="https://www.instagram.com/c3n4p" target="_blank">
+            <img src="https://img.icons8.com/?size=100&id=59813&format=png&color=FFFFFF" alt="Instagram" class="social-logo">
+        </a>
+        <a href="https://github.com/devshadow1" target="_blank">
+            <img src="https://img.icons8.com/?size=100&id=12598&format=png&color=FFFFFF" alt="GitHub" class="social-logo">
+        </a>
+        <a href="mailto:cenapbozkurtt@gmail.com">
+            <img src="https://img.icons8.com/?size=100&id=59835&format=png&color=FFFFFF" alt="Email" class="social-logo">
+        </a>
+    </div>
+    <footer>
+        Designed by c3n4p. <br> <span class="snucre">snucre</span>
+    </footer>
+
+    <script>
+        async function fetchNowPlaying() {
+            try {
+                const response = await fetch('https://snucrespotify.vercel.app/api/now-playing', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    mode: 'cors'
+                });
+
+                // Response durumunu kontrol et
+                if (!response.ok) {
+                    throw new Error(`HTTP hatası: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.name) {
+                    // Şarkı bilgilerini güncelle
+                    document.getElementById('album-art').src = data.albumArt;
+                    document.getElementById('song-name').textContent = data.name;
+                    document.getElementById('artist-name').textContent = data.artist;
+
+                    // Şarkıya tıklanabilirlik ekleme
+                    const openSpotifyLink = () => {
+                        window.open(data.spotifyUrl, '_blank');
+                    };
+
+                    document.getElementById('song-name').onclick = openSpotifyLink;
+                    document.getElementById('album-art').onclick = openSpotifyLink;
+
+                    const progress = Math.floor(data.progress / 1000); // ms cinsinden
+                    document.getElementById('progress').style.width = `${(progress / 300) * 100}%`; // 300 ms = 5 dakika
+
+                } else {
+                    // Şarkı çalmıyorsa
+                    document.getElementById('song-name').textContent = 'Şarkı dinlemiyorum.';
+                    document.getElementById('album-art').src = 'https://i.postimg.cc/PfYwnSL1/image.png';
+                    document.getElementById('artist-name').textContent = '';
+                    document.getElementById('progress').style.width = '0%';
+                }
+            } catch (error) {
+                console.error('Fetch hata:', error);
+                document.getElementById('song-name').textContent = `Hata oluştu: ${error.message}`;
+            }
+        }
+
+        // Şarkı bilgilerini her 5 saniyede bir güncelle
+        setInterval(fetchNowPlaying, 5000);
+
+        // Sayfa yüklendiğinde hemen verileri çek
+        fetchNowPlaying();
+    </script>
+</body>
+</html>
+
